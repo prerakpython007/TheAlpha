@@ -7,40 +7,44 @@ Source: https://sketchfab.com/3d-models/battle-armour-sonar-titan-virlance-ef1b4
 Title: Battle-Armour Sonar Titan [ Virlance ]
 */
 
-import React, { useEffect, Suspense } from 'react'
-import { useGLTF, useTexture, Environment, Stage } from '@react-three/drei'
+import React, { useEffect, useState } from 'react'
+import { useGLTF, useTexture, Stage } from '@react-three/drei'
 import * as THREE from 'three'
 
-// Import all assets using Vite's asset handling
-const MODEL_PATH = '/robo.gltf'
-const TEXTURE_PATHS = {
-  Material_1: '/textures/Material_1_baseColor.jpeg',
-  Material_10: '/textures/Material_10_baseColor.jpeg',
-  Material_16: '/textures/Material_16_baseColor.jpeg',
-  Material_2: '/textures/Material_2_baseColor.jpeg',
-  Material_24: '/textures/Material_24_baseColor.jpeg',
-  Material_3: '/textures/Material_3_baseColor.jpeg',
-  Material_35: '/textures/Material_35_baseColor.jpeg',
-  Material_37: '/textures/Material_37_baseColor.jpeg',
-  Material_38: '/textures/Material_38_baseColor.jpeg',
-  Material_39: '/textures/Material_39_baseColor.jpeg',
-  Material_4: '/textures/Material_4_baseColor.jpeg',
-  Material_40: '/textures/Material_40_baseColor.jpeg',
-  Material_40_emissive: '/textures/Material_40_emissive.jpeg',
-  Material_40_normal: '/textures/Material_40_normal.png',
-  Material_6: '/textures/Material_6_baseColor.jpeg',
-}
-
 export default function Model(props) {
-  // Load GLTF with draco compression support
-  const { nodes, materials } = useGLTF(MODEL_PATH, true)
+  const [error, setError] = useState(null)
+  
+  // Load GLTF with error handling
+  const { nodes, materials } = useGLTF('/robo.gltf', undefined, (error) => {
+    console.error('Error loading model:', error)
+    setError(error)
+  })
 
-  // Load textures
-  const textures = useTexture(TEXTURE_PATHS, (loader) => {
-    loader.setCrossOrigin('anonymous')
+  // Load textures with error handling
+  const textures = useTexture({
+    Material_1: '/textures/Material_1_baseColor.jpeg',
+    Material_10: '/textures/Material_10_baseColor.jpeg',
+    Material_16: '/textures/Material_16_baseColor.jpeg',
+    Material_2: '/textures/Material_2_baseColor.jpeg',
+    Material_24: '/textures/Material_24_baseColor.jpeg',
+    Material_3: '/textures/Material_3_baseColor.jpeg',
+    Material_35: '/textures/Material_35_baseColor.jpeg',
+    Material_37: '/textures/Material_37_baseColor.jpeg',
+    Material_38: '/textures/Material_38_baseColor.jpeg',
+    Material_39: '/textures/Material_39_baseColor.jpeg',
+    Material_4: '/textures/Material_4_baseColor.jpeg',
+    Material_40: '/textures/Material_40_baseColor.jpeg',
+    Material_40_emissive: '/textures/Material_40_emissive.jpeg',
+    Material_40_normal: '/textures/Material_40_normal.png',
+    Material_6: '/textures/Material_6_baseColor.jpeg',
+  }, (error) => {
+    console.error('Error loading texture:', error)
+    setError(error)
   })
 
   useEffect(() => {
+    if (!materials || !textures) return
+
     // Set properties for all materials
     Object.values(materials).forEach(material => {
       if (material) {
@@ -67,18 +71,23 @@ export default function Model(props) {
         
         // Set texture properties
         texture.flipY = false
-        texture.colorSpace = THREE.SRGBColorSpace
+        texture.encoding = THREE.sRGBEncoding
         texture.needsUpdate = true
         materials[materialName].needsUpdate = true
       }
     })
   }, [materials, textures])
 
+  // If there's an error, log it but don't break the scene
+  if (error) {
+    console.error('Error in Robo component:', error)
+  }
+
   return (
     <group {...props} dispose={null}>
       <Stage
-        environment="city"
         intensity={1}
+        environment="city"
         adjustCamera={false}
         contactShadow={{ opacity: 0.5, blur: 2 }}
       >
@@ -144,4 +153,4 @@ export default function Model(props) {
 }
 
 // Preload the model
-useGLTF.preload(MODEL_PATH)
+useGLTF.preload('/robo.gltf')
