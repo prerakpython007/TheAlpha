@@ -5,10 +5,36 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Ensure the public directory exists in dist
-await fs.ensureDir('dist');
+// Define paths
+const publicDir = resolve(__dirname, 'public');
+const distDir = resolve(__dirname, 'dist');
 
-// Copy the model and textures
-await fs.copy('public/robo.gltf', 'dist/robo.gltf');
-await fs.copy('public/robo.bin', 'dist/robo.bin');
-await fs.copy('public/textures', 'dist/textures');
+try {
+  // Ensure the dist directory exists
+  await fs.ensureDir(distDir);
+
+  // Check if files exist before copying
+  if (await fs.pathExists(resolve(publicDir, 'robo.gltf'))) {
+    await fs.copy(resolve(publicDir, 'robo.gltf'), resolve(distDir, 'robo.gltf'));
+    console.log('Copied robo.gltf');
+  } else {
+    console.error('robo.gltf not found in public directory');
+  }
+
+  if (await fs.pathExists(resolve(publicDir, 'robo.bin'))) {
+    await fs.copy(resolve(publicDir, 'robo.bin'), resolve(distDir, 'robo.bin'));
+    console.log('Copied robo.bin');
+  } else {
+    console.error('robo.bin not found in public directory');
+  }
+
+  if (await fs.pathExists(resolve(publicDir, 'textures'))) {
+    await fs.copy(resolve(publicDir, 'textures'), resolve(distDir, 'textures'));
+    console.log('Copied textures directory');
+  } else {
+    console.error('textures directory not found in public directory');
+  }
+} catch (err) {
+  console.error('Error during file copying:', err);
+  process.exit(1);
+}

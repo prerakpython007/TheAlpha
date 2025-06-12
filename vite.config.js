@@ -6,17 +6,17 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    assetsInclude: ['**/*.gltf', '**/*.bin', '**/*.jpeg', '**/*.png'],
-    copyPublicDir: true,
+    emptyOutDir: true,
+    assetsDir: '',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html')
       }
     }
   },
-  publicDir: 'public',
+  assetsInclude: ['**/*.gltf', '**/*.bin', '**/*.jpeg', '**/*.png'],
+  publicDir: resolve(__dirname, 'public'),
   server: {
     host: true
-  },
-  assetsInclude: ['**/*.gltf', '**/*.bin']
+  }
 })
