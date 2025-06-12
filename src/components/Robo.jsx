@@ -11,85 +11,68 @@ import React, { useEffect, Suspense } from 'react'
 import { useGLTF, useTexture, Environment, Stage } from '@react-three/drei'
 import * as THREE from 'three'
 
-// Import model using Vite's asset handling
-import robotModel from '/robo.gltf'
+// Import all assets using Vite's asset handling
+const MODEL_PATH = '/robo.gltf'
+const TEXTURE_PATHS = {
+  Material_1: '/textures/Material_1_baseColor.jpeg',
+  Material_10: '/textures/Material_10_baseColor.jpeg',
+  Material_16: '/textures/Material_16_baseColor.jpeg',
+  Material_2: '/textures/Material_2_baseColor.jpeg',
+  Material_24: '/textures/Material_24_baseColor.jpeg',
+  Material_3: '/textures/Material_3_baseColor.jpeg',
+  Material_35: '/textures/Material_35_baseColor.jpeg',
+  Material_37: '/textures/Material_37_baseColor.jpeg',
+  Material_38: '/textures/Material_38_baseColor.jpeg',
+  Material_39: '/textures/Material_39_baseColor.jpeg',
+  Material_4: '/textures/Material_4_baseColor.jpeg',
+  Material_40: '/textures/Material_40_baseColor.jpeg',
+  Material_40_emissive: '/textures/Material_40_emissive.jpeg',
+  Material_40_normal: '/textures/Material_40_normal.png',
+  Material_6: '/textures/Material_6_baseColor.jpeg',
+}
 
 export default function Model(props) {
-  const { nodes, materials } = useGLTF(robotModel)
+  // Load GLTF with draco compression support
+  const { nodes, materials } = useGLTF(MODEL_PATH, true)
 
-  // Load all textures with error handling
-  const textures = useTexture({
-    Material_1: '/textures/Material_1_baseColor.jpeg',
-    Material_10: '/textures/Material_10_baseColor.jpeg',
-    Material_16: '/textures/Material_16_baseColor.jpeg',
-    Material_2: '/textures/Material_2_baseColor.jpeg',
-    Material_24: '/textures/Material_24_baseColor.jpeg',
-    Material_3: '/textures/Material_3_baseColor.jpeg',
-    Material_35: '/textures/Material_35_baseColor.jpeg',
-    Material_37: '/textures/Material_37_baseColor.jpeg',
-    Material_38: '/textures/Material_38_baseColor.jpeg',
-    Material_39: '/textures/Material_39_baseColor.jpeg',
-    Material_4: '/textures/Material_4_baseColor.jpeg',
-    Material_40: '/textures/Material_40_baseColor.jpeg',
-    Material_40_emissive: '/textures/Material_40_emissive.jpeg',
-    Material_40_normal: '/textures/Material_40_normal.png',
-    Material_6: '/textures/Material_6_baseColor.jpeg',
-  }, (error) => {
-    console.error('Failed to load texture:', error);
+  // Load textures
+  const textures = useTexture(TEXTURE_PATHS, (loader) => {
+    loader.setCrossOrigin('anonymous')
   })
 
-  // Apply textures and enhance materials
   useEffect(() => {
-    // Set common material properties for all materials
+    // Set properties for all materials
     Object.values(materials).forEach(material => {
-      // Set PBR properties for better metallic look
-      material.metalness = 0.8;
-      material.roughness = 0.2;
-      material.envMapIntensity = 1.2;
-      
-      // Enable color management
-      material.needsUpdate = true;
-      if (material.color) {
-        material.color.convertSRGBToLinear();
+      if (material) {
+        material.roughness = 0.5
+        material.metalness = 0.8
+        material.envMapIntensity = 1
+        material.needsUpdate = true
       }
     })
 
-    // Apply specific textures to their corresponding materials
-    const materialMappings = {
-      Material_1: textures.Material_1,
-      Material_2: textures.Material_2,
-      Material_3: textures.Material_3,
-      Material_4: textures.Material_4,
-      Material_6: textures.Material_6,
-      Material_10: textures.Material_10,
-      Material_16: textures.Material_16,
-      Material_24: textures.Material_24,
-      Material_35: textures.Material_35,
-      Material_37: textures.Material_37,
-      Material_38: textures.Material_38,
-      Material_39: textures.Material_39,
-      Material_40: textures.Material_40,
-    }
-
-    // Apply textures with proper encoding
-    Object.entries(materialMappings).forEach(([materialName, texture]) => {
-      if (materials[materialName] && texture) {
-        materials[materialName].map = texture;
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.needsUpdate = true;
-        materials[materialName].needsUpdate = true;
+    // Apply textures to materials
+    Object.entries(textures).forEach(([key, texture]) => {
+      const materialName = key.split('_')[0] + '_' + key.split('_')[1]
+      if (materials[materialName]) {
+        if (key.includes('normal')) {
+          materials[materialName].normalMap = texture
+        } else if (key.includes('emissive')) {
+          materials[materialName].emissiveMap = texture
+          materials[materialName].emissive = new THREE.Color(1, 1, 1)
+          materials[materialName].emissiveIntensity = 1
+        } else {
+          materials[materialName].map = texture
+        }
+        
+        // Set texture properties
+        texture.flipY = false
+        texture.colorSpace = THREE.SRGBColorSpace
+        texture.needsUpdate = true
+        materials[materialName].needsUpdate = true
       }
     })
-
-    // Special handling for Material_40 with additional maps
-    if (materials.Material_40) {
-      materials.Material_40.emissiveMap = textures.Material_40_emissive;
-      materials.Material_40.normalMap = textures.Material_40_normal;
-      materials.Material_40.emissiveIntensity = 1.5;
-      materials.Material_40.normalScale = new THREE.Vector2(1, 1);
-      materials.Material_40.needsUpdate = true;
-    }
-  }, [textures, materials])
+  }, [materials, textures])
 
   return (
     <group {...props} dispose={null}>
@@ -160,4 +143,5 @@ export default function Model(props) {
   )
 }
 
-useGLTF.preload(robotModel)
+// Preload the model
+useGLTF.preload(MODEL_PATH)

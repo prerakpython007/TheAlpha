@@ -5,36 +5,34 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Define paths
-const publicDir = resolve(__dirname, 'public');
-const distDir = resolve(__dirname, 'dist');
+async function copyAssets() {
+  try {
+    const publicDir = resolve(__dirname, 'public');
+    const distDir = resolve(__dirname, 'dist');
 
-try {
-  // Ensure the dist directory exists
-  await fs.ensureDir(distDir);
+    // Ensure dist directory exists
+    await fs.ensureDir(distDir);
 
-  // Check if files exist before copying
-  if (await fs.pathExists(resolve(publicDir, 'robo.gltf'))) {
+    // Copy GLTF model and its binary
     await fs.copy(resolve(publicDir, 'robo.gltf'), resolve(distDir, 'robo.gltf'));
-    console.log('Copied robo.gltf');
-  } else {
-    console.error('robo.gltf not found in public directory');
-  }
-
-  if (await fs.pathExists(resolve(publicDir, 'robo.bin'))) {
     await fs.copy(resolve(publicDir, 'robo.bin'), resolve(distDir, 'robo.bin'));
-    console.log('Copied robo.bin');
-  } else {
-    console.error('robo.bin not found in public directory');
-  }
 
-  if (await fs.pathExists(resolve(publicDir, 'textures'))) {
-    await fs.copy(resolve(publicDir, 'textures'), resolve(distDir, 'textures'));
-    console.log('Copied textures directory');
-  } else {
-    console.error('textures directory not found in public directory');
+    // Copy textures directory
+    const texturesSource = resolve(publicDir, 'textures');
+    const texturesDest = resolve(distDir, 'textures');
+    
+    if (await fs.pathExists(texturesSource)) {
+      await fs.copy(texturesSource, texturesDest);
+      console.log('✓ Textures copied successfully');
+    } else {
+      console.error('⨯ Textures directory not found');
+    }
+
+    console.log('✓ All assets copied successfully');
+  } catch (err) {
+    console.error('Error copying assets:', err);
+    process.exit(1);
   }
-} catch (err) {
-  console.error('Error during file copying:', err);
-  process.exit(1);
 }
+
+copyAssets();

@@ -7,16 +7,23 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    assetsDir: '',
+    assetsInclude: ['**/*.gltf', '**/*.bin', '**/*.jpeg', '**/*.png'],
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html')
+      output: {
+        assetFileNames: 'assets/[name][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
       }
     }
   },
-  assetsInclude: ['**/*.gltf', '**/*.bin', '**/*.jpeg', '**/*.png'],
-  publicDir: resolve(__dirname, 'public'),
+  optimizeDeps: {
+    exclude: ['three']
+  },
   server: {
-    host: true
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
   }
 })
