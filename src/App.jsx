@@ -2,7 +2,7 @@ import { useState, Suspense } from 'react'
 import './App.css'
 import { Canvas } from '@react-three/fiber'
 import { Environment, OrbitControls } from '@react-three/drei'
-import Robo from '../public/Robo'
+import Robo from './components/Robo'
 
 function App() {
   return (
