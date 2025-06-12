@@ -3,31 +3,21 @@
   "installCommand": "pnpm install",
   "outputDirectory": "dist",
   "framework": "vite",
-  "public": true,
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
+      "src": "/assets/(.*)",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" }
     },
     {
-      "source": "/(.+\\.(gltf|bin|jpeg|png))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
+      "src": "/(.*)\\.(.+)",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" }
+    },
+    { 
+      "handle": "filesystem"
+    },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/.*",
+      "dest": "/index.html"
     }
   ]
 }
