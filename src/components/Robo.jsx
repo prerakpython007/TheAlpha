@@ -21,16 +21,16 @@ export default function Model(props) {
     Material_16: '/textures/Material_16_baseColor.jpeg',
     Material_2: '/textures/Material_2_baseColor.jpeg',
     Material_24: '/textures/Material_24_baseColor.jpeg',
-    Material_3: './textures/Material_3_baseColor.jpeg',
-    Material_35: './textures/Material_35_baseColor.jpeg',
-    Material_37: './textures/Material_37_baseColor.jpeg',
-    Material_38: './textures/Material_38_baseColor.jpeg',
-    Material_39: './textures/Material_39_baseColor.jpeg',
-    Material_4: './textures/Material_4_baseColor.jpeg',
-    Material_40: './textures/Material_40_baseColor.jpeg',
-    Material_40_emissive: './textures/Material_40_emissive.jpeg',
-    Material_40_normal: './textures/Material_40_normal.png',
-    Material_6: './textures/Material_6_baseColor.jpeg',
+    Material_3: '/textures/Material_3_baseColor.jpeg',
+    Material_35: '/textures/Material_35_baseColor.jpeg',
+    Material_37: '/textures/Material_37_baseColor.jpeg',
+    Material_38: '/textures/Material_38_baseColor.jpeg',
+    Material_39: '/textures/Material_39_baseColor.jpeg',
+    Material_4: '/textures/Material_4_baseColor.jpeg',
+    Material_40: '/textures/Material_40_baseColor.jpeg',
+    Material_40_emissive: '/textures/Material_40_emissive.jpeg',
+    Material_40_normal: '/textures/Material_40_normal.png',
+    Material_6: '/textures/Material_6_baseColor.jpeg',
   })
 
   // Apply textures and enhance materials
@@ -155,4 +155,4 @@ export default function Model(props) {
   )
 }
 
-useGLTF.preload('./robo.gltf')
+useGLTF.preload('/robo.gltf')
