@@ -7,14 +7,14 @@ Source: https://sketchfab.com/3d-models/battle-armour-sonar-titan-virlance-ef1b4
 Title: Battle-Armour Sonar Titan [ Virlance ]
 */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, Suspense } from 'react'
 import { useGLTF, useTexture, Environment, Stage } from '@react-three/drei'
 import * as THREE from 'three'
 
 export default function Model(props) {
-  const { nodes, materials } = useGLTF('/robo.gltf')
+  const { nodes, materials } = useGLTF('/robo.gltf', true) // Added true for draco support
 
-  // Load all textures with proper paths
+  // Load all textures with error handling
   const textures = useTexture({
     Material_1: '/textures/Material_1_baseColor.jpeg',
     Material_10: '/textures/Material_10_baseColor.jpeg',
@@ -31,6 +31,8 @@ export default function Model(props) {
     Material_40_emissive: '/textures/Material_40_emissive.jpeg',
     Material_40_normal: '/textures/Material_40_normal.png',
     Material_6: '/textures/Material_6_baseColor.jpeg',
+  }, (error) => {
+    console.error('Failed to load texture:', error);
   })
 
   // Apply textures and enhance materials
