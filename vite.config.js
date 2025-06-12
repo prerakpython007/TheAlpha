@@ -8,14 +8,17 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     copyPublicDir: true,
-    assetsInclude: ['**/*.gltf', '**/*.bin', '**/*.jpeg', '**/*.png'],
+    chunkSizeWarningLimit: 1600,
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        manualChunks: {
+          'three-deps': ['three', '@react-three/fiber', '@react-three/drei'],
+          vendor: ['react', 'react-dom']
+        }
       }
     }
   },
-  publicDir: 'public',
+  publicDir: resolve(__dirname, 'public'),
   server: {
     host: true
   }
