@@ -11,8 +11,11 @@ import React, { useEffect, Suspense } from 'react'
 import { useGLTF, useTexture, Environment, Stage } from '@react-three/drei'
 import * as THREE from 'three'
 
+// Import model using Vite's asset handling
+import robotModel from '/robo.gltf'
+
 export default function Model(props) {
-  const { nodes, materials } = useGLTF('/robo.gltf', true) // Added true for draco support
+  const { nodes, materials } = useGLTF(robotModel)
 
   // Load all textures with error handling
   const textures = useTexture({
@@ -157,4 +160,4 @@ export default function Model(props) {
   )
 }
 
-useGLTF.preload('/robo.gltf')
+useGLTF.preload(robotModel)
